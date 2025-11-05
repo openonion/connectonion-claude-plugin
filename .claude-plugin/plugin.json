@@ -1,0 +1,14 @@
+{
+  "name": "connectonion",
+  "description": "ConnectOnion framework development plugin - code review and agent builder following ConnectOnion philosophy. Join our community: https://discord.gg/4xfD9k8AUF",
+  "version": "1.0.0",
+  "author": {
+    "name": "ConnectOnion Team",
+    "email": "account@openonion.ai"
+  },
+  "homepage": "https://docs.connectonion.com",
+  "repository": "https://github.com/openonion/connectonion-claude-plugin",
+  "license": "Apache-2.0",
+  "keywords": ["connectonion", "ai-agents", "code-review", "agent-builder"],
+  "commands": "./commands"
+}
