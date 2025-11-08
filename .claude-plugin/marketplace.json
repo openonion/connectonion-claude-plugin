@@ -11,7 +11,7 @@
   "plugins": [
     {
       "name": "connectonion",
-      "source": ".",
+      "source": "./",
       "description": "ConnectOnion framework development plugin - code review and agent builder",
       "version": "1.0.0",
       "author": {
