@@ -4,23 +4,31 @@ Official Claude Code plugin for ConnectOnion framework development. Build AI age
 
 ## What is This?
 
-This plugin provides essential commands for ConnectOnion framework development:
+Get your ConnectOnion code reviewed by **tech legends** - each with their own style:
 
-### Core Development Commands
-1. **`/co-review`** - Review code against ConnectOnion documentation and best practices
-2. **`/co-build`** - Build ConnectOnion agents following documented patterns
+### 👥 Dual Code Review System
 
-### Project Management Commands
-3. **`/release`** - Automate version release - update version, build, publish to PyPI, create GitHub release
-4. **`/update-docs`** - Update all documentation for a feature with deep understanding first
-5. **`/wiki-sync`** - AI-driven wiki content synthesis from docs/ with SEO optimization
+**Choose your reviewer:**
 
-### Development Tools
-6. **`/migrate-to-ts`** - Migrate one Python ConnectOnion feature to TypeScript version
-7. **`/code-analyze-doc`** - Analyze code structure and add documentation headers to each file
-8. **`/design-refine`** - Analyze and iteratively refine website design until it meets professional standards
+| Reviewer | Style | Focus | Best For |
+|----------|-------|-------|----------|
+| **Linus** 🔥 | Direct, brutal, no-nonsense | Kill complexity & over-engineering | When your code is too clever |
+| **Aaron** 💡 | Thoughtful, educational, constructive | Correctness & elegance | Learning framework patterns |
+
+**Or use both!** Get Linus to kill complexity, then Aaron to polish correctness.
+
+### 🔥 Core Commands
+1. **`/linus-review-my-code`** - Get roasted for complexity (Linus-style: direct & honest)
+2. **`/aaron-review-my-code`** - Get reviewed by the creator (Aaron: educational & principled)
+3. **`/aaron-build-my-agent`** - Let Aaron build your agent (scaffolding done right)
+
+### 🛠️ Development Tools
+4. **`/code-analyze-doc`** - Analyze code structure and add documentation headers
+5. **`/design-refine`** - Iteratively refine website design to professional standards
 
 All commands are grounded in actual ConnectOnion documentation to prevent hallucinations and ensure correctness.
+
+**Join the community:** https://discord.gg/4xfD9k8AUF
 
 ## Philosophy
 
@@ -56,244 +64,224 @@ Select "Browse Plugins" and install `connectonion`.
 
 ## Commands
 
-### `/co-review` - Code Review
+### `/aaron-review-my-code` - Get Reviewed by the Creator
 
-Review your ConnectOnion code against framework documentation.
+Get your ConnectOnion code reviewed by Aaron, the framework creator. Principled, educational review focused on correctness and elegance.
 
 **Usage:**
 
 ```bash
 # Review current file
-/co-review
+/aaron-review-my-code
 
 # Review specific file
-/co-review path/to/agent.py
+/aaron-review-my-code path/to/agent.py
 
 # Review entire project
-/co-review .
+/aaron-review-my-code .
 ```
 
-**What It Checks:**
+**What Aaron Checks:**
 
-✅ **Agent Creation Patterns**
+✅ **Correctness**
 - Proper `Agent()` initialization
 - System prompts in markdown files
-- Appropriate `max_iterations`
+- Type hints on all tools
+- Framework pattern compliance
 
-✅ **Tool Patterns**
-- Function-based tools with type hints
-- Class instance tools (pass instance, not methods)
-- Proper docstrings
-
-✅ **Best Practices**
+✅ **Elegance**
+- Code simplicity (fighting over-engineering)
+- Proper tool patterns (function vs class)
 - `llm_do` vs code usage
-- No over-engineering
-- Documentation compliance
+- Maintainability
+
+✅ **Philosophy Alignment**
+- "Keep simple things simple"
+- No unnecessary abstractions
+- Framework intent honored
+
+**Review Style:**
+
+- **Constructive** - Always teaching, never just criticizing
+- **Personal** - From the creator who designed the patterns
+- **Educational** - Explains WHY, not just WHAT
+- **Community-focused** - Invites you to Discord for help
 
 **Example Output:**
 
 ```
-❌ Missing Type Hints at agent.py:15
+💡 Aaron says: agent.py:15
 
-Problem: Tool function missing required type hints
+Here's what I'm seeing: Your tool function is missing type hints.
 
-Documentation Reference: "Type hints are required on all parameters and return"
+Why this matters: ConnectOnion uses type hints to automatically generate
+tool schemas for the LLM. Without them, the agent can't understand what
+parameters your tool needs.
 
-Suggested Fix:
-# Before
-def search(query, limit=10):
-    return "results"
-
-# After
+Here's how I'd write it:
 def search(query: str, limit: int = 10) -> str:
-    return "results"
+    """Search for information."""
+    return f"Results for {query}"
+
+ConnectOnion was designed for: Simple, type-safe tool definitions that
+just work without configuration.
+
+📚 Docs: https://docs.connectonion.com/tools/function-tools
 ```
 
-### `/co-build` - Agent Builder
+**At the End:**
 
-Build ConnectOnion agents interactively following documented patterns.
+Every review ends with:
+- Summary of critical vs nice-to-have fixes
+- What you're doing right (always positive!)
+- Specific next steps with file:line references
+- Discord link to get help: https://discord.gg/4xfD9k8AUF
+- Personal sign-off from Aaron
+
+**Best for:**
+- Learning ConnectOnion patterns from the creator
+- Understanding framework philosophy
+- Getting constructive, educational feedback
+- Joining the community
+
+### `/aaron-build-my-agent` - Let the Creator Build Your Agent
+
+Let Aaron (ConnectOnion creator) build your agent from scratch. He'll ask questions, choose the right pattern, and scaffold complete working code with explanations.
 
 **Usage:**
 
 ```bash
-/co-build
+/aaron-build-my-agent
 ```
 
-The command will ask you:
-1. What should your agent do?
-2. What tools does it need?
-3. Does it need shared state?
+**Aaron will ask you:**
+1. **What should your agent do?** (e.g., "Screenshot websites", "Analyze code")
+2. **What operations does it need?** (e.g., "Browser control", "File reading")
+3. **Does it need to remember things?** (e.g., "Keep browser session open")
 
-Then generates complete, working code.
+**Then Aaron creates:**
 
-**Generated Code Includes:**
+- 🛠️ **Complete agent code** - Ready to run
+- 📝 **System prompt file** - In markdown (prompts/[agent_name].md)
+- 🎯 **Right pattern** - Simple functions OR class instance based on needs
+- ✅ **Proper type hints** - ConnectOnion requires them
+- 📚 **Explanation** - Why he built it this way
+- 🚀 **Usage instructions** - How to run and customize
 
-- ✅ Complete imports
-- ✅ Tool definitions with proper type hints
-- ✅ System prompt file template
-- ✅ Agent configuration
-- ✅ Example usage
-- ✅ Inline documentation
+**Building Style:**
+
+- **Personal** - From the creator who designed the patterns
+- **Educational** - Explains the "why" behind choices
+- **Simple first** - Starts with simplest pattern that works
+- **Runnable** - Code works immediately
+- **Customizable** - Shows how to modify it
 
 **Example Interaction:**
 
 ```
-User: /co-build
-Agent: What should your agent do?
+User: /aaron-build-my-agent
+
+Aaron: Hey! What should your agent do?
+
 User: Take screenshots of websites
-Agent: [Generates complete browser agent code with proper patterns]
+
+Aaron: Great! Does it need to keep the browser open between screenshots?
+
+User: Yes
+
+Aaron: Perfect! I'll use a class instance pattern for stateful browser control.
+
+[Generates complete browser agent with:
+ - BrowserAutomation class
+ - System prompt in prompts/web_assistant.md
+ - Example usage
+ - Explanation of pattern choice]
+
+Aaron: Your agent is ready! I used Pattern B (class instance) because you need
+to maintain browser state. The type hints tell ConnectOnion what parameters
+each method needs. Check out Discord if you have questions! 🎯
 ```
 
-### `/release` - Version Release Automation
+**At the end, every generated agent includes:**
+- Discord link to get help: https://discord.gg/4xfD9k8AUF
+- GitHub issue reporting if something's wrong
+- Customization guide
+- Personal sign-off from Aaron
 
-Automate the complete release workflow including version bumping, PyPI publishing, GitHub releases, and documentation updates.
+**Best for:**
+- Building your first agent
+- Learning ConnectOnion patterns from the creator
+- Getting production-ready scaffolding
+- Understanding framework design philosophy
+
+### `/linus-review-my-code` - Get Roasted for Complexity
+
+Get direct, no-nonsense code review from Linus. Hunts down over-engineering and unnecessary complexity with brutal honesty.
 
 **Usage:**
 
 ```bash
-# Automatic version detection from commit history
-/release auto
+# Review current file
+/linus-review-my-code
 
-# Explicit PATCH bump (bug fixes, docs)
-/release patch
+# Review specific file
+/linus-review-my-code path/to/agent.py
 
-# Explicit MINOR bump (new features)
-/release minor
-
-# Explicit MAJOR bump (breaking changes)
-/release major
+# Review entire project
+/linus-review-my-code .
 ```
 
-**What It Does:**
+**What It Checks:**
 
-1. Version Management
-   - Bumps version following VERSIONING.md rules
-   - Updates `__init__.py`, `setup.py`, `VERSIONING.md`
-   - Creates annotated git tags
+🚨 **Over-Engineering Detection**
+- Unnecessary try-catch blocks
+- Over-abstraction (factories, managers, helpers)
+- Utils.py anti-pattern
+- Long functions (>40 lines)
+- Deep nesting
 
-2. Publishing
-   - Builds wheel and source distributions
-   - Uploads to PyPI
-   - Verifies installation
+🚨 **Code Smells**
+- Classes that should be functions
+- Complex error handling infrastructure
+- Unnecessary if-else chains
+- Functions that don't fit on one screen
 
-3. GitHub Integration
-   - Creates GitHub releases with generated notes
-   - Posts discussion announcement (GraphQL)
-   - Sends Discord webhook notification
+✅ **ConnectOnion Patterns**
+- Type hints on tools
+- System prompts in files
+- Class instance usage
+- Proper error handling
 
-4. Documentation
-   - Updates docs site version badges
-   - Rebuilds documentation if needed
+**Review Philosophy:**
 
-### `/update-docs` - Feature Documentation
+- **Direct and honest** - Calls out bad code clearly
+- **Constructive** - Shows simple solutions
+- **Educational** - Explains WHY simplicity matters
+- **Focused** - Only flags real problems
 
-Update all documentation for a feature with deep understanding first.
+**Example Output:**
 
-**Usage:**
+```
+🚨 OVER-ENGINEERING at agent.py:25
 
-```bash
-/update-docs <feature-name>
+Problem: Unnecessary try-catch that hides errors
 
-# Example
-/update-docs auto_debug
+try:
+    result = do_something()
+except Exception:
+    pass  # This hides errors!
+
+Why this is bad: You just made debugging impossible. If something fails, you WANT to know!
+
+Fix:
+result = do_something()  # Let it crash with a clear error message
 ```
 
-**What It Does:**
-
-1. Deep Understanding
-   - Reads implementation code
-   - Reviews existing documentation
-   - Analyzes examples and tests
-   - Identifies user pain points
-
-2. Comprehensive Updates
-   - Updates main docs (`docs/`)
-   - Creates/updates GitHub wiki pages
-   - Updates docs site navigation and pages
-   - Updates README and quickstart
-   - Updates CLI embedded docs
-
-3. Quality Verification
-   - Tests all code examples
-   - Verifies all links
-   - Ensures mobile-friendly design
-   - Commits to nested repos correctly
-
-### `/wiki-sync` - Wiki Content Synthesis
-
-AI-driven wiki content synthesis from docs/ with SEO optimization (comprehension-based, not copy-paste).
-
-**Usage:**
-
-```bash
-# Focus on recently changed docs (default)
-/wiki-sync focus-recent
-
-# Comprehensive update of entire wiki
-/wiki-sync full-sync
-
-# Create new wiki pages for uncovered topics
-/wiki-sync new-topics
-```
-
-**What It Does:**
-
-1. Content Analysis
-   - Discovers recent documentation changes
-   - Reads and comprehends all docs
-   - Identifies gaps in wiki coverage
-   - Researches SEO keywords
-
-2. AI-Driven Synthesis
-   - Creates beginner-friendly content from understanding
-   - Applies SEO template structure
-   - Adds working code examples with output
-   - Includes common issues and solutions
-
-3. SEO Optimization
-   - Targets high-volume keywords
-   - Question-format headings
-   - Internal cross-linking
-   - 1000-2000 word count per page
-
-### `/migrate-to-ts` - Python to TypeScript Migration
-
-Migrate one Python ConnectOnion feature to TypeScript version following the "keep it simple" philosophy.
-
-**Usage:**
-
-```bash
-/migrate-to-ts <feature-description-or-file:line>
-
-# Examples
-/migrate-to-ts docs/examples/search_tool.py
-/migrate-to-ts "search agent with calculator"
-```
-
-**What It Does:**
-
-1. Reading Phase
-   - Reads Python source files
-   - Reads related imports and dependencies
-   - Reviews TypeScript SDK patterns
-   - Creates detailed todo list
-
-2. Direct Translation
-   - Simple syntax conversion (no over-engineering)
-   - Preserves original behavior
-   - NO try-catch unless Python had it
-   - NO abstractions that didn't exist
-
-3. Testing
-   - Copies .env from examples
-   - Creates simple test file
-   - Runs tests to verify behavior
-
-**Key Principles:**
-- Less code = better code
-- Don't make user learn new things
-- Let it crash (no unnecessary error handling)
-- 5 lines Python = 5 lines TypeScript
+**Best for:**
+- Catching over-engineering early
+- Learning "keep simple things simple"
+- Getting honest feedback on code complexity
+- Before committing large features
 
 ### `/code-analyze-doc` - Code Documentation Headers
 
@@ -466,13 +454,47 @@ This plugin enforces patterns from:
 
 All recommendations cite specific documentation sections.
 
+## Bug Reports & Feedback
+
+### Found a Problem?
+
+If a command is:
+- Stuck in a loop or not completing
+- Giving incorrect suggestions
+- Missing obvious issues
+- Not following documented patterns
+
+**Report it quickly via GitHub CLI:**
+
+```bash
+gh issue create --repo openonion/connectonion-claude-plugin \
+  --title "[command-name]: [brief issue]" \
+  --body "Command: /command-name
+
+Problem: [what went wrong]
+Expected: [what should happen]
+File: [if applicable]
+
+Code context:
+\`\`\`python
+[paste code if relevant]
+\`\`\`"
+```
+
+**Or report manually:**
+- **GitHub Issues**: https://github.com/openonion/connectonion-claude-plugin/issues
+- **Discord**: https://discord.gg/4xfD9k8AUF
+
+Your feedback makes the plugin better for everyone! 🙏
+
 ## Contributing
 
-Found an issue or want to improve the plugin?
+Want to improve the plugin?
 
-1. **GitHub**: https://github.com/openonion/connectonion-claude-plugin
+1. **Fork**: https://github.com/openonion/connectonion-claude-plugin
 2. **Issues**: Report bugs or request features
-3. **Discord**: Join our community at https://discord.gg/4xfD9k8AUF
+3. **Pull Requests**: Submit improvements
+4. **Discord**: Discuss ideas at https://discord.gg/4xfD9k8AUF
 
 ## License
 
