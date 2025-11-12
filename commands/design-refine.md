@@ -27,7 +27,7 @@ Capture screenshots across different viewports using co command:
 (Replace localhost:3000 with detected URL)
 
 ## Step 3: Comprehensive Design Analysis
-Use Task tool with ui-ux-design-auditor agent to analyze against 12 core design principles:
+Use Task tool with ui-ux-design-auditor agent to analyze against 13 core design principles:
 
 ### 1. Visual Hierarchy ⭐ CRITICAL
 **Target:** 5 clear levels of importance (H1 → H2 → H3 → Body → Caption)
@@ -107,7 +107,14 @@ Use Task tool with ui-ux-design-auditor agent to analyze against 12 core design 
 - **Content:** 16-24px between paragraphs, 32-48px after headers
 - **Anti-pattern:** Wall of text, no margins, cluttered layouts
 
-### 12. Performance
+### 12. Icon Consistency
+**Target:** Use brand-specific icons from react-icons for social media and platforms
+- **Social Media:** Use FaDiscord, FaGithub, FaTwitter, FaYoutube, FaLinkedin, FaInstagram, FaTiktok from 'react-icons/fa'
+- **Platforms:** Use FaGithub (not GitBranch), FaPython (for PyPI), FaDiscord (not MessageCircle)
+- **UI Elements:** lucide-react is fine for generic UI icons (Copy, Check, ChevronDown, etc.)
+- **Anti-pattern:** Using generic lucide icons (Github, MessageCircle, etc.) for branded platforms
+
+### 13. Performance
 **Target:** LCP < 2.5s, CLS < 0.1, FID < 100ms
 - **Images:** Next.js Image component, WebP format, lazy loading
 - **Layout shift:** Reserve space for images/ads, no pop-ins
@@ -147,6 +154,7 @@ Design is considered "good" when:
 - ✅ Proper alignment and grid structure
 - ✅ Adequate white space and breathing room
 - ✅ Clear user flow with prominent CTAs
+- ✅ Brand icons use react-icons (FaGithub, FaDiscord, etc.)
 
 ## Step 7: Summary Report
 Provide before/after comparison showing:
