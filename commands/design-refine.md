@@ -42,6 +42,48 @@ description: Analyze and iteratively refine website design until it meets profes
 ### Touch Targets
 - **Minimum:** `min-h-[48px]` for all interactive elements
 
+### Common Code Patterns
+
+**Section Structure:**
+```tsx
+<section className="py-16 md:py-24 px-4 md:px-6">
+  <div className="max-w-4xl mx-auto">
+    <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-white mb-6">Section Title</h2>
+    <p className="text-lg text-slate-100 mb-8">Body content...</p>
+  </div>
+</section>
+```
+
+**Card Pattern:**
+```tsx
+<div className="p-6 bg-gray-800/30 rounded-lg border border-gray-700 hover:border-purple-400/50 hover:bg-gray-800/50 transition-all">
+  <Icon className="w-8 h-8 text-purple-400 mb-4" />
+  <h3 className="font-semibold text-white mb-2">Card Title</h3>
+  <p className="text-sm text-slate-100">Card content</p>
+</div>
+```
+
+**Hero Pattern:**
+```tsx
+<section className="py-16 md:py-24 px-4 md:px-6">
+  <div className="max-w-3xl mx-auto text-center">
+    <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-6">Hero Title</h1>
+    <p className="text-xl md:text-2xl lg:text-3xl text-slate-50 mb-10">Hero subtitle</p>
+  </div>
+</section>
+```
+
+### Anti-Patterns to Avoid
+```tsx
+❌ <h2 className="text-3xl">           // Should be text-4xl
+❌ <h2 className="text-5xl">           // Should be text-4xl
+❌ <section className="py-12">         // Should be py-16 md:py-24
+❌ <p className="text-base">           // Should be text-lg
+❌ <p className="text-slate-200">      // Should be text-slate-100
+❌ <div className="mb-3">              // Should be mb-2 or mb-4
+❌ <button className="h-10">           // Should have min-h-[48px]
+```
+
 ---
 
 ## Step 1: Determine the target URL
