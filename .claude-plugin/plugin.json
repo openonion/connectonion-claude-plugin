@@ -1,7 +1,7 @@
 {
   "name": "connectonion",
   "description": "ConnectOnion framework development plugin - code review and agent builder following ConnectOnion philosophy. Join our community: https://discord.gg/4xfD9k8AUF",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "author": {
     "name": "ConnectOnion Team",
     "email": "account@openonion.ai"
