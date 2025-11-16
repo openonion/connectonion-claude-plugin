@@ -6,14 +6,14 @@
   },
   "metadata": {
     "description": "Official ConnectOnion Claude Code plugin marketplace",
-    "version": "1.0.0"
+    "version": "1.0.1"
   },
   "plugins": [
     {
       "name": "connectonion",
       "source": "./",
       "description": "ConnectOnion framework development plugin - code review and agent builder",
-      "version": "1.0.0",
+      "version": "1.0.1",
       "author": {
         "name": "ConnectOnion Team",
         "email": "account@openonion.ai"
