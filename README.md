@@ -1,10 +1,23 @@
-# ConnectOnion Claude Code Plugin
+<div align="center">
 
-Official Claude Code plugin for ConnectOnion framework development. Build AI agents correctly, every time.
+# 🧅 ConnectOnion Claude Code Plugin
 
-## What is This?
+**Build AI agents correctly, every time.**
 
-Get your ConnectOnion code reviewed by **tech legends** - each with their own style:
+[![Version](https://img.shields.io/badge/version-1.0.2-blue.svg)](https://github.com/openonion/connectonion-claude-plugin)
+[![License](https://img.shields.io/badge/license-Apache%202.0-green.svg)](LICENSE)
+[![Discord](https://img.shields.io/discord/1234567890?color=7289da&label=Discord&logo=discord&logoColor=white)](https://discord.gg/4xfD9k8AUF)
+[![ConnectOnion](https://img.shields.io/badge/ConnectOnion-0.4.2-orange.svg)](https://pypi.org/project/connectonion/)
+
+**[Installation](#installation)** • **[Commands](#commands)** • **[Discord](https://discord.gg/4xfD9k8AUF)** • **[Docs](https://docs.connectonion.com)**
+
+---
+
+</div>
+
+## 🎯 What is This?
+
+The **official Claude Code plugin** for ConnectOnion framework development. Get your code reviewed by **tech legends** - each with their own style:
 
 ### 👥 Dual Code Review System
 
@@ -28,9 +41,65 @@ Get your ConnectOnion code reviewed by **tech legends** - each with their own st
 
 All commands are grounded in actual ConnectOnion documentation to prevent hallucinations and ensure correctness.
 
-**Join the community:** https://discord.gg/4xfD9k8AUF
+---
 
-## Philosophy
+## ✨ Why This Plugin?
+
+<table>
+<tr>
+<td width="33%">
+
+### 🎓 **Educational**
+Learn from Aaron, the framework creator. Every review teaches you the "why" behind patterns.
+
+</td>
+<td width="33%">
+
+### 🎯 **Accurate**
+Grounded in real docs. No hallucinations. Only patterns that actually work.
+
+</td>
+<td width="33%">
+
+### ⚡ **Fast**
+Review code in seconds. Generate agents in minutes. No memorizing patterns.
+
+</td>
+</tr>
+</table>
+
+---
+
+## 🚀 Quick Start
+
+**1. Add the marketplace:**
+```bash
+/plugin marketplace add openonion/connectonion-claude-plugin
+```
+
+**2. Install the plugin:**
+```bash
+/plugin install connectonion
+```
+
+**3. Get your first review:**
+```bash
+/aaron-review-my-code agent.py
+```
+
+That's it! 🎉
+
+---
+
+## 💬 Join the Community
+
+[![Discord](https://img.shields.io/discord/1234567890?color=7289da&label=Join%20Discord&logo=discord&logoColor=white&style=for-the-badge)](https://discord.gg/4xfD9k8AUF)
+
+Get help, share agents, and discuss with other builders.
+
+---
+
+## 📖 Philosophy
 
 **"Keep simple things simple, make complicated things possible"**
 
@@ -40,29 +109,28 @@ This plugin helps you write ConnectOnion code that follows the framework's philo
 - Simple solutions first
 - Complexity only when needed
 
-## Installation
+---
 
-### Add the Marketplace
+## 📦 Installation
 
+**Method 1: Direct Install (Recommended)**
 ```bash
+# Add marketplace
 /plugin marketplace add openonion/connectonion-claude-plugin
-```
 
-### Install the Plugin
-
-```bash
+# Install plugin
 /plugin install connectonion
 ```
 
-Or browse plugins interactively:
-
+**Method 2: Browse Interactively**
 ```bash
 /plugin
 ```
+Select "Browse Plugins" → Find "connectonion" → Install
 
-Select "Browse Plugins" and install `connectonion`.
+---
 
-## Commands
+## 📚 Commands Reference
 
 ### `/aaron-review-my-code` - Get Reviewed by the Creator
 
@@ -379,31 +447,9 @@ Analyze and iteratively refine website design until it meets professional standa
 - Professional typography
 - Proper interactive states
 
-## Why Use This Plugin?
+---
 
-### 1. Documentation-Grounded
-
-Every recommendation and code pattern comes from actual ConnectOnion documentation. No hallucinations.
-
-### 2. Correct by Design
-
-Generated code follows framework best practices:
-- Type hints required
-- Proper class instance usage
-- Markdown system prompts
-- Appropriate `max_iterations`
-
-### 3. Educational
-
-Explains **why** patterns matter, not just what to fix. References documentation sections for learning.
-
-### 4. Time-Saving
-
-- Review code in seconds
-- Generate working agents in minutes
-- No need to remember all patterns
-
-## Key Patterns Enforced
+## 🎨 Key Patterns Enforced
 
 ### Function-Based Tools (Recommended)
 
@@ -454,7 +500,9 @@ This plugin enforces patterns from:
 
 All recommendations cite specific documentation sections.
 
-## Bug Reports & Feedback
+---
+
+## 🐛 Bug Reports & Feedback
 
 ### Found a Problem?
 
@@ -487,7 +535,9 @@ Code context:
 
 Your feedback makes the plugin better for everyone! 🙏
 
-## Contributing
+---
+
+## 🤝 Contributing
 
 Want to improve the plugin?
 
@@ -496,11 +546,23 @@ Want to improve the plugin?
 3. **Pull Requests**: Submit improvements
 4. **Discord**: Discuss ideas at https://discord.gg/4xfD9k8AUF
 
-## License
+---
+
+## ⭐ Show Your Support
+
+If this plugin helps you build better agents, **give it a star!** ⭐
+
+It helps others discover the plugin and motivates us to keep improving it.
+
+---
+
+## 📄 License
 
 Apache-2.0
 
-## Links
+---
+
+## 🔗 Links
 
 - **ConnectOnion Docs**: https://docs.connectonion.com
 - **GitHub**: https://github.com/openonion/connectonion
@@ -509,4 +571,10 @@ Apache-2.0
 
 ---
 
-Made with ❤️ by the ConnectOnion Team
+<div align="center">
+
+**Made with ❤️ by the ConnectOnion Team**
+
+[⭐ Star this repo](https://github.com/openonion/connectonion-claude-plugin) • [💬 Join Discord](https://discord.gg/4xfD9k8AUF) • [📖 Read Docs](https://docs.connectonion.com)
+
+</div>
