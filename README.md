@@ -23,7 +23,7 @@ Get your ConnectOnion code reviewed by **tech legends** - each with their own st
 3. **`/aaron-build-my-agent`** - Let Aaron build your agent (scaffolding done right)
 
 ### 🛠️ Development Tools
-4. **`/code-analyze-doc`** - Analyze code structure and add documentation headers
+4. **`/generate-code-map-headers`** - Generate code map headers with dependency analysis and data flow
 5. **`/design-refine`** - Iteratively refine website design to professional standards
 
 All commands are grounded in actual ConnectOnion documentation to prevent hallucinations and ensure correctness.
@@ -283,19 +283,19 @@ result = do_something()  # Let it crash with a clear error message
 - Getting honest feedback on code complexity
 - Before committing large features
 
-### `/code-analyze-doc` - Code Documentation Headers
+### `/generate-code-map-headers` - Generate Code Map Headers
 
-Analyze code structure and add comprehensive documentation headers to each file.
+Generate code map headers that document dependencies, data flow, and integration points for each file.
 
 **Usage:**
 
 ```bash
-# Analyze all code files
-/code-analyze-doc
+# Generate headers for all code files
+/generate-code-map-headers
 
-# Analyze specific directory or pattern
-/code-analyze-doc src/
-/code-analyze-doc **/*.py
+# Generate for specific directory or pattern
+/generate-code-map-headers src/
+/generate-code-map-headers **/*.py
 ```
 
 **What It Does:**

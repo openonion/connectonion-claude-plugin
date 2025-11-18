@@ -1,10 +1,10 @@
 ---
 allowed-tools: Glob, Grep, Read, MultiEdit, Edit, TodoWrite, Task, Bash
 argument-hint: [directory-or-pattern]
-description: Analyze code structure and add documentation headers to each file
+description: Generate code map headers: add dependency analysis and data flow documentation to each file
 ---
 
-# Code Analysis and Documentation Headers
+# Generate Code Map Headers
 
 ## Step 1: Find all code files
 Use Glob to find files matching pattern: ${1:-**/*.{js,ts,jsx,tsx,py}}
