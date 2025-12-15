@@ -106,6 +106,12 @@ Capture screenshots across different viewports using co command:
 - Use Bash to run: co -b "screenshot of localhost:3000 desktop"
 (Replace localhost:3000 with detected URL)
 
+**If you get "command not found: co" error:**
+1. Run: `pip install connectonion` to install ConnectOnion
+2. Verify installation: `co --version`
+3. If still not working, check if pip is available: `pip --version`
+4. Retry the screenshot commands after installation
+
 ## Step 3: Comprehensive Design Analysis
 Use Task tool with ui-ux-design-auditor agent to analyze against 13 core design principles:
 
@@ -174,11 +180,12 @@ Use Task tool with ui-ux-design-auditor agent to analyze against 13 core design 
 - **Check:** Content readable without horizontal scroll at all sizes?
 - **Anti-pattern:** Fixed pixel widths, content overflow, tiny mobile text
 
-### 7. Alignment Grid
-**Target:** Elements snap to invisible columns
-- **Check:** Draw vertical lines - do elements align?
-- **Max-width:** max-w-7xl (1280px) for most content, max-w-5xl (1024px) for text-heavy
-- **Anti-pattern:** Random max-w-* values, elements not aligned, offset content
+### 7. Alignment Grid (Page Width Standard)
+**Target:** All pages use single standard width for consistency
+- **Standard:** `max-w-4xl` (896px) for ALL documentation pages
+- **Hero sections only:** `max-w-3xl` for centered hero text on homepage
+- **Never use:** max-w-5xl, max-w-6xl, max-w-7xl for page content (except homepage)
+- **Anti-pattern:** Different pages with different widths, random max-w-* values
 
 ### 8. Interactive States
 **Target:** All clickable elements have hover/focus/active states
@@ -238,6 +245,11 @@ Repeat until all Critical and High issues are resolved:
    - Use Bash: co -b "screenshot of localhost:3000 mobile" (if mobile issues fixed)
    - Use Bash: co -b "screenshot of localhost:3000 tablet" (if tablet issues fixed)
    (Replace localhost:3000 with actual URL)
+
+   **If "command not found: co" error occurs:**
+   - Run: `pip install connectonion` first
+   - Then retry the screenshot commands
+
 3. Verify the fix improved the design
 4. Mark todo item as completed
 5. Re-analyze if needed for new issues introduced

@@ -50,9 +50,173 @@ For each file found:
    - **Python**: test_*.py, *_test.py, tests/, pytest files
 
 ## Step 5: Generate or update file header documentation
-Based on full context from related files, create/update headers:
+Based on full context from related files, create/update headers.
 
-For JavaScript/TypeScript files:
+**IMPORTANT: Be as comprehensive as possible.** Include all relevant details that help LLMs and developers understand:
+- What the file does
+- How it fits into the system
+- What data flows through it
+- What side effects it has
+- How to use it
+
+### Python File Headers - STANDARD Format
+
+Use this format for most files:
+```python
+"""
+Purpose: [What problem this solves - one line]
+LLM-Note:
+  Dependencies: imports from [file1.py, file2.py] | imported by [caller1.py, caller2.py] | tested by [tests/test_*.py]
+  Data flow: receives X from caller → processes via Y → returns Z
+  State/Effects: modifies self.X | writes to file/database | calls external API
+  Integration: exposes func_a(), func_b(), ClassC | uses @decorator | FastAPI dependency
+  Performance: caching strategy | async patterns | known bottlenecks
+  Errors: raises ErrorType | handles X | fallback behavior
+"""
+```
+
+### Python File Headers - DETAILED Format (for core/complex files)
+
+Use this for files with many relationships, architectural decisions, or complex logic:
+
+**Real Example: connectonion/agent.py**
+```python
+"""
+Purpose: Orchestrate AI agent execution with LLM calls, tool execution, and automatic logging
+LLM-Note:
+  Dependencies: imports from [llm.py, tool_factory.py, prompts.py, decorators.py, logger.py, tool_executor.py, tool_registry.py] | imported by [__init__.py, debug_agent/__init__.py] | tested by [tests/test_agent.py, tests/test_agent_prompts.py, tests/test_agent_workflows.py]
+  Data flow: receives user prompt: str from Agent.input() → creates/extends current_session with messages → calls llm.complete() with tool schemas → receives LLMResponse with tool_calls → executes tools via tool_executor.execute_and_record_tools() → appends tool results to messages → repeats loop until no tool_calls or max_iterations → logger logs to .co/logs/{name}.log and .co/sessions/{name}_{timestamp}.yaml → returns final response: str
+  State/Effects: modifies self.current_session['messages', 'trace', 'turn', 'iteration'] | writes to .co/logs/{name}.log and .co/sessions/ via logger.py
+  Integration: exposes Agent(name, tools, system_prompt, model, log, quiet), .input(prompt), .execute_tool(name, args), .add_tool(func), .remove_tool(name), .list_tools(), .reset_conversation() | tools stored in ToolRegistry with attribute access (agent.tools.tool_name) and instance storage (agent.tools.gmail) | tool execution delegates to tool_executor module | log defaults to .co/logs/ (None), can be True (current dir), False (disabled), or custom path | quiet=True suppresses console but keeps session logging | trust enforcement moved to host() for network access control
+  Performance: max_iterations=10 default (configurable per-input) | session state persists across turns for multi-turn conversations | ToolRegistry provides O(1) tool lookup via .get() or attribute access
+  Errors: LLM errors bubble up | tool execution errors captured in trace and returned to LLM for retry
+
+Architecture:
+    ┌──────────────────────────────────────────────────────────────────────┐
+    │                           Agent.input(prompt)                        │
+    └───────────────────────────────────┬──────────────────────────────────┘
+                                        │
+                                        ▼
+    ┌──────────────────────────────────────────────────────────────────────┐
+    │  Initialize/Restore Session                                          │
+    │  - Create current_session dict if None                               │
+    │  - Or restore from passed session (stateless API)                    │
+    │  - Add user message to messages[]                                    │
+    └───────────────────────────────────┬──────────────────────────────────┘
+                                        │
+                                        ▼
+    ┌──────────────────────────────────────────────────────────────────────┐
+    │  _run_iteration_loop(max_iterations)                                 │
+    │  ┌────────────────────────────────────────────────────────────────┐  │
+    │  │  while iteration < max_iterations:                             │  │
+    │  │      1. _get_llm_decision()                                    │  │
+    │  │         → llm.complete(messages, tools)                        │  │
+    │  │         → returns LLMResponse with content/tool_calls          │  │
+    │  │                                                                │  │
+    │  │      2. if no tool_calls: return response.content              │  │
+    │  │                                                                │  │
+    │  │      3. _execute_and_record_tools(tool_calls)                  │  │
+    │  │         → tool_executor executes each tool                     │  │
+    │  │         → adds assistant message + tool results to messages    │  │
+    │  │         → fires before_tools/after_each_tool/after_tools       │  │
+    │  │                                                                │  │
+    │  │      4. continue loop (LLM sees tool results)                  │  │
+    │  └────────────────────────────────────────────────────────────────┘  │
+    └───────────────────────────────────┬──────────────────────────────────┘
+                                        │
+                                        ▼
+    ┌──────────────────────────────────────────────────────────────────────┐
+    │  Return final response + log to YAML session                         │
+    └──────────────────────────────────────────────────────────────────────┘
+
+File Relationships:
+    connectonion/
+    ├── agent.py           # THIS FILE - orchestrates execution
+    ├── llm.py             # LLM abstraction (OpenAI, Anthropic, Gemini)
+    ├── tool_factory.py    # Convert functions to tool schemas
+    ├── tool_registry.py   # Store and lookup tools (O(1))
+    ├── tool_executor.py   # Execute tools with xray context
+    ├── logger.py          # Terminal + file + YAML logging
+    ├── prompts.py         # Load system prompts
+    └── events.py          # Event system (before_llm, after_tools, etc.)
+
+    Flow: agent.py → llm.py → provider API
+                   → tool_executor.py → user functions
+                   → logger.py → .co/logs/, .co/sessions/
+
+Event System:
+    after_user_input  → fires after user prompt added to messages
+    before_llm        → fires before each LLM call (can modify messages)
+    after_llm         → fires after LLM response (can inspect tool_calls)
+    before_tools      → fires ONCE before all tools execute
+    before_each_tool  → fires before EACH tool
+    after_each_tool   → fires after EACH tool (don't add messages!)
+    after_tools       → fires ONCE after all tools (safe to add messages)
+    on_error          → fires on tool error
+    on_complete       → fires when task completes
+
+Session Structure:
+    current_session = {
+        'session_id': str,           # For API continuation
+        'messages': List[Dict],      # OpenAI format messages
+        'trace': List[Dict],         # Execution history
+        'turn': int,                 # Conversation turn counter
+        'iteration': int,            # Current loop iteration
+        'user_prompt': str,          # Original user input
+        'result': str                # Final response
+    }
+
+Design Notes:
+    - Functions as tools: Pass any callable, auto-converts to schema
+    - Class instances: Methods become tools, instance accessible via agent.tools.classname
+    - Stateless API support: Pass session dict to continue conversations
+    - Event-driven: Plugins hook into lifecycle via events
+    - Fail-fast: Tool errors returned to LLM for retry, not silently ignored
+"""
+```
+
+**Another Example: connectonion/llm.py**
+```python
+"""
+Purpose: Unified LLM abstraction supporting OpenAI, Anthropic, Gemini, and managed keys
+LLM-Note:
+  Dependencies: imports from [openai, anthropic, os, usage.py] | imported by [agent.py, llm_do.py] | tested by [tests/test_llm.py, tests/real_api/]
+  Data flow: messages: List[Dict] + tools: List[Schema] → provider-specific format → API call → normalize to LLMResponse(content, tool_calls, usage)
+  State/Effects: reads API keys from environment | no persistent state | usage tracked per call
+  Integration: exposes LLM base class, create_llm() factory, OpenAILLM, AnthropicLLM, GeminiLLM, ManagedKeysLLM | factory routes by model prefix (gpt-, claude-, gemini-, co/)
+  Performance: synchronous API calls | no caching | provider timeouts respected
+  Errors: raises provider-specific errors | ValueError for missing API keys
+
+Architecture:
+    ┌─────────────────────────────────────────────────────────────┐
+    │                    create_llm(model, api_key)               │
+    │  Routes to appropriate LLM class based on model prefix      │
+    └─────────────────────────┬───────────────────────────────────┘
+                              │
+              ┌───────────────┼───────────────┬───────────────┐
+              │               │               │               │
+              ▼               ▼               ▼               ▼
+    ┌─────────────┐  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐
+    │ OpenAILLM   │  │AnthropicLLM │  │  GeminiLLM  │  │ManagedKeys  │
+    │ gpt-*, o1-* │  │ claude-*    │  │ gemini-*    │  │ co/* prefix │
+    └──────┬──────┘  └──────┬──────┘  └──────┬──────┘  └──────┬──────┘
+           │                │                │                │
+           ▼                ▼                ▼                ▼
+    ┌─────────────────────────────────────────────────────────────┐
+    │                    LLMResponse                              │
+    │  content: str | tool_calls: List[ToolCall] | usage: Usage   │
+    └─────────────────────────────────────────────────────────────┘
+
+Model Routing:
+    - gpt-*, o1-*, o4-*  → OpenAILLM (OPENAI_API_KEY)
+    - claude-*           → AnthropicLLM (ANTHROPIC_API_KEY)
+    - gemini-*, models/* → GeminiLLM (GOOGLE_API_KEY)
+    - co/*               → ManagedKeysLLM (OPENONION_API_KEY)
+"""
+```
+
+### JavaScript/TypeScript File Headers
+
 ```javascript
 /**
  * @purpose [What problem this solves - one line]
@@ -63,21 +227,19 @@ For JavaScript/TypeScript files:
  *   Integration: exposes {getUserData, updateUser} | uses parent's onUpdate callback | implements AuthMiddleware interface
  *   Performance: caches user data 5min | debounces API calls 300ms | lazy loads ProfileImage
  *   Errors: throws UserNotFoundError | handles network timeout | fallback to cache
+ *
+ * Architecture:
+ *     ┌─────────────────────────────────────────────────────────┐
+ *     │  Component Tree                                         │
+ *     │  App → AuthProvider → UserProfile → UserService (this) │
+ *     └─────────────────────────────────────────────────────────┘
+ *
+ * File Relationships:
+ *     features/user/
+ *     ├── UserProfile.tsx   # UI component
+ *     ├── userService.ts    # THIS FILE
+ *     └── userTypes.ts      # TypeScript types
  */
-```
-
-For Python files:
-```python
-"""
-Purpose: [What problem this solves - one line]
-LLM-Note:
-  Dependencies: imports from [lib/database.py, utils/validator.py] | imported by [api/routes.py, workers/processor.py] | tested by [tests/test_module.py]
-  Data flow: receives request_data: Dict[str, Any] from routes.py → validates via validator.py → queries database.py → returns ProcessedResult
-  State/Effects: modifies global_cache | writes to PostgreSQL | publishes to Redis queue | logs to logging.getLogger(__name__)
-  Integration: exposes process_data(), get_status() | implements DataProcessor ABC | uses @celery.task decorator | FastAPI dependency
-  Performance: @lru_cache(maxsize=128) | asyncio.gather() for parallel | connection pool 10 | batch size 100
-  Errors: raises ValidationError | @retry(stop_after_attempt=3) | circuit breaker | dead letter queue
-"""
 ```
 
 The LLM-Note MUST include ALL of these aspects:
