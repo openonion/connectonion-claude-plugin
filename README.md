@@ -4,12 +4,12 @@
 
 **Build AI agents correctly, every time.**
 
-[![Version](https://img.shields.io/badge/version-1.0.2-blue.svg)](https://github.com/openonion/connectonion-claude-plugin)
+[![Version](https://img.shields.io/badge/version-1.1.0-blue.svg)](https://github.com/openonion/connectonion-claude-plugin)
 [![License](https://img.shields.io/badge/license-Apache%202.0-green.svg)](LICENSE)
 [![Discord](https://img.shields.io/discord/1234567890?color=7289da&label=Discord&logo=discord&logoColor=white)](https://discord.gg/4xfD9k8AUF)
 [![ConnectOnion](https://img.shields.io/badge/ConnectOnion-0.4.2-orange.svg)](https://pypi.org/project/connectonion/)
 
-**[Installation](#installation)** • **[Commands](#commands)** • **[Discord](https://discord.gg/4xfD9k8AUF)** • **[Docs](https://docs.connectonion.com)**
+**[Installation](#installation)** • **[Skills](#skills)** • **[Discord](https://discord.gg/4xfD9k8AUF)** • **[Docs](https://docs.connectonion.com)**
 
 ---
 
@@ -30,7 +30,7 @@ The **official Claude Code plugin** for ConnectOnion framework development. Get 
 
 **Or use both!** Get Linus to kill complexity, then Aaron to polish correctness.
 
-### 🔥 Core Commands
+### 🔥 Core Skills
 1. **`/linus-review-my-code`** - Get roasted for complexity (Linus-style: direct & honest)
 2. **`/aaron-review-my-code`** - Get reviewed by the creator (Aaron: educational & principled)
 3. **`/aaron-build-my-agent`** - Let Aaron build your agent (scaffolding done right)
@@ -39,7 +39,7 @@ The **official Claude Code plugin** for ConnectOnion framework development. Get 
 4. **`/generate-code-map-headers`** - Generate code map headers with dependency analysis and data flow
 5. **`/design-refine`** - Iteratively refine website design to professional standards
 
-All commands are grounded in actual ConnectOnion documentation to prevent hallucinations and ensure correctness.
+All skills are grounded in actual ConnectOnion documentation to prevent hallucinations and ensure correctness.
 
 ---
 
@@ -130,7 +130,7 @@ Select "Browse Plugins" → Find "connectonion" → Install
 
 ---
 
-## 📚 Commands Reference
+## 📚 Skills Reference
 
 ### `/aaron-review-my-code` - Get Reviewed by the Creator
 
