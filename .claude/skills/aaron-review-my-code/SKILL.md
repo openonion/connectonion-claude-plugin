@@ -239,6 +239,77 @@ def search(query: str) -> str:
     return f"Results for {query}"
 ```
 
+**Simple-behavior complexity smell:**
+
+Call out code that makes a simple behavior complicated. Do not rationalize extra helpers, regex cleanup, normalization layers, context-preservation paths, or tests when the desired contract is simple and direct. If the correct behavior is "text is text, data is data", recommend deleting the complexity and keeping the implementation obvious.
+
+When reviewing formatter, parser, adapter, or plugin code, first ask whether the new logic exists only to compensate for unclear data contracts or hypothetical edge cases. Prefer tightening the contract and removing downstream complexity.
+
+### ❌ CLI/API Contract Drift
+
+**禁止**: designing a CLI flag by guessing a hidden default workflow before understanding the user's contract. A flag must mean exactly what it says at the command line.
+
+For CLI/API review, first write the user-facing contract in one sentence, then review code against that sentence. If the contract is "`--skills PATH` uploads that skills folder", do not reinterpret it as "look inside a default skills library", "merge child directories specially", or "invent `~/.co/skills` as the behavior". If the contract is "`--template co-ai` deploys a generated template project without touching my current folder", use the existing create/init path in a temp folder and deploy that folder.
+
+```text
+❌ BAD contract thinking:
+--skills means maybe ~/.co/skills, maybe each child is a skill, maybe skip dot dirs manually.
+
+✅ GOOD contract thinking:
+--skills PATH means copy PATH's contents into remote .co/skills/.
+```
+
+CLI design checklist before recommending code:
+- [ ] What does the flag literally promise to the user?
+- [ ] Does the code use the assigned path, not a hardcoded/default path?
+- [ ] Does reuse mean calling the existing command/helper, not duplicating its behavior?
+- [ ] Does temp work happen in a temp folder, and does the user's current folder stay untouched?
+- [ ] Are cleanup rules explicit: delete on success, keep path on failure for debugging?
+
+### ❌ Swallowed Errors Disguised as Simplicity
+
+**禁止**: `try/except` that catches broad errors and returns `None`, empty strings, empty lists, or silently continues unless the caller has a real fallback path. That is over-engineering because it hides broken assumptions and forces later code to handle fake "maybe missing" states.
+
+Follow the "let it crash" principle for deterministic internal logic: if a helper cannot do what its contract promises, let the exception surface with context instead of converting it into `None`. Catch errors only at real boundaries such as user-facing network calls, optional best-effort diagnostics, or external services, and only when the fallback behavior is explicit.
+
+```python
+# ❌ BAD: hides a broken invariant
+def load_project_config(path: Path) -> dict | None:
+    try:
+        return yaml.safe_load(path.read_text())
+    except Exception:
+        return None
+
+# ✅ GOOD: fail where the contract is violated
+def load_project_config(path: Path) -> dict:
+    return yaml.safe_load(path.read_text()) or {}
+
+# ✅ GOOD: boundary catch with explicit degraded behavior
+try:
+    logs = fetch_startup_logs(deployment_id)
+except requests.exceptions.RequestException:
+    logs = ""  # best-effort diagnostics only; deploy already succeeded
+```
+
+```python
+# ❌ BAD: Tool mixes image payload and prompt guidance
+def take_screenshot(full_page: bool = False) -> str:
+    image_data = "data:image/png;base64,..."
+    if full_page:
+        return image_data + "\n\nSYSTEM REMINDER: inspect details with another screenshot"
+    return image_data
+
+# ❌ BAD: Formatter grows cleanup logic to compensate
+def strip_image_data_but_keep_text(result: str) -> str:
+    return re.sub(r"data:image/.*;base64,[A-Za-z0-9+/=]+", "", result)
+
+# ✅ GOOD: Data-producing tools return data only
+def take_screenshot(full_page: bool = False) -> str:
+    return "data:image/png;base64,..."
+```
+
+Aaron review rule: when a PR adds complexity around a simple path, challenge it directly as over-engineering. Recommend the smallest implementation that satisfies the real contract, and remove tests that only defend the unnecessary complexity.
+
 ### ❌ Missing Type Hints
 
 ```python
