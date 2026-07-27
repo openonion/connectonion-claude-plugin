@@ -1,12 +1,50 @@
 ---
 name: deploy-oo-chat
-description: Deploy oo-chat to production — publish connectonion-ts to npm via GitHub Actions, update oo-chat dependency, commit, push, verify Vercel deploy
-allowed-tools: Bash, Read, Edit, Glob, Grep, Write
+description: Publish connectonion-ts and deploy oo-chat to production. Use when the user explicitly requests the oo-chat release workflow from Claude Code or co ai; supports a no-write --dry-run preflight.
+tools:
+  - Bash(cd *)
+  - Bash(git *)
+  - Bash(./node_modules/.bin/tsc)
+  - Bash(npx jest *)
+  - Bash(npm *)
+  - Bash(gh *)
+  - Bash(vercel *)
+  - read
+  - edit
 ---
 
 # Deploy oo-chat
 
 Publish the connectonion TypeScript SDK and deploy oo-chat to Vercel.
+
+## Invocation
+
+Claude Code:
+
+```text
+/connectonion:deploy-oo-chat
+/connectonion:deploy-oo-chat --dry-run
+```
+
+ConnectOnion, from this plugin repository or another project containing this
+skill under `.claude/skills/`:
+
+```bash
+co ai --yolo "/deploy-oo-chat" --yolo-turns 20
+co ai --yolo "/deploy-oo-chat --dry-run" --yolo-turns 5
+```
+
+## Safety contract
+
+- Treat a normal invocation as authorization for the named release only.
+- Stop if either repository contains unrelated changes. Never stage, overwrite,
+  discard, or commit them.
+- Never force-push, replace an existing tag, bypass hooks, or publish from a
+  branch other than `main`.
+- If the arguments contain `--dry-run`, perform only Step 0 and report the
+  release plan. Do not edit files, install packages, commit, tag, push, trigger
+  workflows, publish to npm, or invoke Vercel.
+- Automated validation and forward tests must use `--dry-run`.
 
 ## Version Numbering
 
@@ -24,7 +62,29 @@ Rule: **if incrementing would make any segment two digits, reset it to 0 and bum
 
 ## Steps
 
-### 1. Build & test connectonion-ts
+### 0. Preflight
+
+Use these repositories:
+
+- `/Users/changxing/project/OnCourse/platform/connectonion-ts`
+- `/Users/changxing/project/OnCourse/platform/oo-chat`
+
+For both repositories, inspect `git status -sb`, confirm the checked-out branch
+is `main`, and confirm `origin` points to the expected `openonion` repository.
+Compare local `HEAD` with `git ls-remote origin refs/heads/main` without
+fetching. Stop on unrelated changes, an unexpected branch/remote, or a local
+branch that is not exactly at the live remote `main`.
+
+Read the current `connectonion-ts/package.json` version, calculate the next
+version using the rules below, and confirm the target tag does not already
+exist locally or on the remote. Read and retain oo-chat's exact current
+`connectonion` dependency value. Report the exact files and commands the release
+would change.
+
+For `--dry-run`, stop here. The successful result is the preflight report; no
+repository or external state may change.
+
+### 1. Build and test connectonion-ts
 
 ```bash
 cd /Users/changxing/project/OnCourse/platform/connectonion-ts
@@ -36,16 +96,26 @@ If tests fail, stop and fix.
 
 ### 2. Bump version in connectonion-ts
 
-Read `package.json` version. Apply versioning rules above. Edit the version field.
+Apply the versioning rules above, then update both `package.json` and
+`package-lock.json` without running package lifecycle scripts:
+
+```bash
+cd /Users/changxing/project/OnCourse/platform/connectonion-ts
+npm version {NEW_VERSION} --no-git-tag-version --ignore-scripts
+```
+
+Verify the root version in both files is exactly `{NEW_VERSION}` before
+committing.
 
 ### 3. Commit and tag
 
 ```bash
 cd /Users/changxing/project/OnCourse/platform/connectonion-ts
-git add -A
+git add package.json package-lock.json
 git commit -m "v{NEW_VERSION}"
 git tag v{NEW_VERSION}
-git push && git push --tags
+git push origin main
+git push origin v{NEW_VERSION}
 ```
 
 The `v*` tag push triggers GitHub Actions (`.github/workflows/publish.yml`) which builds and publishes to npm automatically.
@@ -65,20 +135,20 @@ npm view connectonion version
 
 ### 5. Update oo-chat dependency
 
-Edit `oo-chat/package.json`:
-- Change `"connectonion": "file:../connectonion-ts"` → `"connectonion": "^{NEW_VERSION}"`
-
 ```bash
 cd /Users/changxing/project/OnCourse/platform/oo-chat
-npm install
+npm install "connectonion@^{NEW_VERSION}"
 ```
+
+Verify both `package.json` and `package-lock.json` resolve the requested
+production dependency before committing.
 
 ### 6. Commit and push oo-chat
 
 ```bash
 git add package.json package-lock.json
 git commit -m "Update connectonion to v{NEW_VERSION}"
-git push
+git push origin main
 ```
 
 Pushing to main triggers Vercel auto-deploy.
@@ -89,18 +159,18 @@ Pushing to main triggers Vercel auto-deploy.
 vercel ls --limit 3
 ```
 
-### 8. Restore local dev link
+### 8. Restore an original local dev link
 
-After deploy, restore for local development:
+If and only if the preflight dependency started with `file:`, restore that exact
+original dependency after deployment:
 
-Edit `oo-chat/package.json`:
-- Change `"connectonion": "^{NEW_VERSION}"` → `"connectonion": "file:../connectonion-ts"`
-
-```bash
-npm install
+```text
+npm install "connectonion@{ORIGINAL_DEPENDENCY}"
 ```
 
-Don't commit this — local dev only.
+Do not commit this local-only restoration. If the original dependency was a
+registry version, leave the deployed version in place and require a clean
+working tree.
 
 ## Key Info
 
