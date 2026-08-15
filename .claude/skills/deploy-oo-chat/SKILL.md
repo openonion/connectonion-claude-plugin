@@ -1,142 +1,125 @@
 ---
 name: deploy-oo-chat
-description: Deploy oo-chat to production — publish @connectonion/react and/or connectonion to npm via GitHub Actions, update the oo-chat dependency, commit, push, verify the Vercel deploy
+description: Release @connectonion/react through its protected npm workflow, pin the reviewed package in oo-chat, merge, and verify the Vercel deployment with a real browser session
 allowed-tools: Bash, Read, Edit, Glob, Grep, Write
 ---
 
 # Deploy oo-chat
 
-## The SDK is two packages
+O Chat has one ConnectOnion client dependency: `@connectonion/react`. The React
+package owns the hooks, session store, browser identity, endpoint discovery, and
+OIP WebSocket client. `connectonion-ts` is retired; do not inspect, build,
+publish, pin, or restore it.
 
-| Package | Repo | What it is |
+| Project | Repository | Published artifact |
 |---|---|---|
-| `@connectonion/react` | `/Users/changxing/project/OnCourse/platform/connectonion-react` | the React hooks — `useAgentForHuman`, `useVoiceInput`, the Zustand session store, browser identity |
-| `connectonion` | `/Users/changxing/project/OnCourse/platform/connectonion-ts` | the layer underneath — `RemoteAgent`, the WebSocket protocol, `fetchAgentInfo`, types |
+| React client | `openonion/connectonion-react` | `@connectonion/react` |
+| O Chat | `openonion/oo-chat` | Vercel application |
 
-**oo-chat imports from `@connectonion/react` only.** `connectonion/react` was removed in
-`connectonion@0.3.0` — if you are about to write or restore that import, it is the old shape.
+## Rules
 
-`connectonion` is a **peer** of `@connectonion/react`, so an app installs exactly one copy of
-each. Publish `connectonion` first when both changed; the React package builds against it.
+- Start from clean branches based on the latest `origin/main` in both repos.
+- Never publish from a workstation. Merge reviewed code, then push an exact
+  `v<package-version>` tag at the current React `main` commit.
+- The React workflow derives the npm dist-tag from the version: `alpha`,
+  `beta`, `rc`, or `latest`.
+- Do not move a published tag. If a release is wrong, make a new version.
+- O Chat pins an exact prerelease. Do not use `^` for alpha/beta/RC builds.
+- Never put a `file:` dependency in either `package.json` or lockfile.
+- Do not merge O Chat until the npm registry serves the reviewed React version.
+- A green build is necessary but not sufficient: finish with an OIP browser E2E
+  against the deployed preview, then repeat it against production.
 
-## Version Numbering
-
-Increment patch by 1 each time. When patch reaches 10, roll up:
-
-```
-0.2.3 → 0.2.4    0.2.9 → 0.3.0   (not 0.2.10)    0.9.9 → 1.0.0
-```
-
-Rule: **if incrementing would make any segment two digits, reset it to 0 and bump the one above.**
-
-The two packages version independently.
-
-## Steps
-
-### 1. Build & test the package you changed
+## 1. Prepare and review the React release
 
 ```bash
-cd /Users/changxing/project/OnCourse/platform/connectonion-react   # or connectonion-ts
-npx tsc --noEmit
-npx jest
+cd /Users/changxing/project/OnCourse/platform/connectonion-react
+git fetch origin
+git switch -c fix/<topic> origin/main
+npm ci
+npm run typecheck
+npm test
+npm run build
 ```
 
-If anything fails, stop and fix.
+For a release, update `package.json` and `package-lock.json` to the next SemVer
+version. Preserve normal numeric ordering; `0.4.2` may advance to `0.4.3` and
+does not need a made-up digit rollover. Use canonical prereleases such as
+`0.4.3-alpha.1`.
 
-### 2. Bump the version
+Open a PR, wait for required checks, and merge it. Confirm the merge commit is
+the current reviewed `main` before tagging.
 
-Read `package.json`, apply the rules above, edit the version field.
-
-If you changed `@connectonion/react` in a way that needs a newer core, also raise its
-`peerDependencies.connectonion` range.
-
-### 3. Commit and tag
-
-```bash
-git add -A
-git commit -m "v{NEW_VERSION}"
-git tag v{NEW_VERSION}
-git push origin main && git push origin v{NEW_VERSION}
-```
-
-The `v*` tag triggers `.github/workflows/publish.yml`, which verifies the tag matches
-`package.json`, runs the tests, builds, and publishes.
-
-Neither repo holds an npm token — both use **npm trusted publishing (OIDC)**. GitHub Actions
-exchanges a short-lived OIDC token for publish rights and the release carries a provenance
-attestation. Nothing to rotate, no secret to leak. If a publish fails with
-`404 Not Found - PUT`, the trusted publisher is not registered for that package on npmjs.com;
-that is a web-only setting and only the package owner can add it.
-
-### 4. Wait for the publish
+## 2. Tag and verify the protected npm release
 
 ```bash
+git switch main
+git pull --ff-only origin main
+node -p "require('./package.json').version"
+git tag v<version>
+git push origin v<version>
 gh run watch --repo openonion/connectonion-react --exit-status
-npm view @connectonion/react version
 ```
 
-### 5. Point oo-chat at the published version
+`.github/workflows/publish.yml` checks that the tag equals `package.json`, the
+tag points at current `main`, dependencies audit cleanly, typecheck/tests/build
+pass, and the exact packed artifact installs in a clean project. It publishes
+with npm Trusted Publishing and provenance.
+
+Verify the public artifact and expected dist-tag:
+
+```bash
+npm view @connectonion/react@<version> version dist.tarball dist.integrity
+npm view @connectonion/react dist-tags --json
+```
+
+## 3. Pin O Chat to the public package
 
 ```bash
 cd /Users/changxing/project/OnCourse/platform/oo-chat
-npm pkg set dependencies."@connectonion/react"="^{NEW_VERSION}"
-npm install
-npm run build          # MUST pass — this is what Vercel runs
-npx vitest run
+git fetch origin
+git switch -c fix/<topic> origin/main
+npm pkg set dependencies."@connectonion/react"="<version>"
+npm install --package-lock-only
+npm ci
+npm run lint
+npm test
+npm run build
 ```
 
-Confirm the lockfile resolved from the registry, not from a path:
+Confirm both manifests use the same exact version and the lockfile resolves a
+registry tarball:
 
 ```bash
-grep -A2 '"node_modules/@connectonion/react"' package-lock.json   # expect a registry URL
+node -e "const p=require('./package.json'); const l=require('./package-lock.json'); console.log(p.dependencies['@connectonion/react'], l.packages['node_modules/@connectonion/react'])"
 ```
 
-### 6. Commit and push oo-chat
+Open an O Chat PR and let its branch produce the Vercel preview. Test the actual
+preview URL before merging.
 
-```bash
-git add package.json package-lock.json
-git commit -m "Update @connectonion/react to v{NEW_VERSION}"
-git push
-```
+## 4. Published-artifact OIP acceptance
 
-Pushing a branch builds a Vercel **preview**; merging to `main` builds **production**.
+Start `co ai` from the matching Python preview/stable package, not an editable
+checkout. Open its O Chat link in a dedicated browser tab and preserve Host logs
+plus screenshots. At minimum:
 
-### 7. Verify on the preview before merging
+1. Connect and complete owner onboarding once.
+2. Send a normal prompt and confirm one answer.
+3. Ask the agent to delegate a concrete task to Codex and confirm the Codex card,
+   streamed child activity, and final result.
+4. If Claude Code changed, run the equivalent Claude Code delegation.
+5. Confirm the browser console has no O Chat/React errors and Host logs show OIP
+   `/ws`, not ACP.
+6. Confirm initial onboarding renders one invite-code field and one submit.
 
-```bash
-vercel ls --limit 3
-```
+Do not place invite codes, credentials, or private keys in logs, screenshots,
+issues, or PRs.
 
-**A green local build is not the check.** See below.
+## 5. Merge and verify production
 
-## Never put a local path in package.json
+Merge the green O Chat PR into `main`; that commit triggers the production
+Vercel deployment. Check the deployment status and repeat the published-artifact
+OIP acceptance against `https://chat.openonion.ai`.
 
-Do not "restore a local dev link" by editing `package.json` to `file:../connectonion-ts` or
-`file:../connectonion-react`, and never run `npm i <local-path>` in a package you are about
-to publish — `npm i <path>` rewrites `package.json` as a side effect.
-
-That is not a style preference; it has broken production three times:
-
-- `RemoteSessionStatus = 'running'` — local build green, Vercel red (fixed by `connectonion@0.1.6`)
-- `profile` — same shape (fixed by `0.1.10`)
-- `@connectonion/react@0.2.2` — published with `peerDependencies` still pointing at
-  `file:/tmp/...`. `tsc`, 30 tests, and the build were all green; the package was
-  **uninstallable for every consumer**. Nothing in a repo's own test suite installs the
-  package the way a consumer does.
-
-A symlinked or path dependency typechecks against unreleased code. The published semver is
-what Vercel installs. **Publish first, then bump.** If you must symlink for local iteration,
-symlink inside `node_modules` only and never commit it.
-
-## Key Info
-
-| Item | Value |
-|------|-------|
-| React repo | `openonion/connectonion-react` → npm `@connectonion/react` |
-| TS SDK repo | `openonion/connectonion-ts` → npm `connectonion` |
-| oo-chat repo | `openonion/oo-chat` |
-| Vercel project | `oo-chat` |
-| Publish trigger | git tag `v*` → GitHub Actions → npm (OIDC, no token) |
-| Deploy trigger | push to `main` → Vercel production; branch push → preview |
-| What oo-chat imports | `@connectonion/react` only |
-| Production deps | `"@connectonion/react": "^X.Y.Z"` + `"connectonion": "^X.Y.Z"` (its peer) |
+Record the React version, npm dist-tag, React PR/tag/workflow, O Chat PR/deploy,
+agent address, and screenshot paths in the release handoff.
