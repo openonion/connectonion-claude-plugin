@@ -1,6 +1,6 @@
 ---
 name: deploy-oo-chat
-description: Release @connectonion/react through its protected npm workflow, pin the reviewed package in oo-chat, merge, and verify the Vercel deployment with a real browser session
+description: Release the OIP-native @connectonion/react reader through its protected npm workflow, pin the reviewed package in O Chat, and verify the live Work Room with real browser evidence
 allowed-tools: Bash, Read, Edit, Glob, Grep, Write
 ---
 
@@ -9,7 +9,9 @@ allowed-tools: Bash, Read, Edit, Glob, Grep, Write
 O Chat has one ConnectOnion client dependency: `@connectonion/react`. The React
 package owns the hooks, session store, browser identity, endpoint discovery, and
 OIP WebSocket client. `connectonion-ts` is retired; do not inspect, build,
-publish, pin, or restore it.
+publish, pin, or restore it. The supported product flow is native Codex or
+Claude Code provider events in Core → React's OIP normalizer → O Chat's Work
+Room; the browser is a fail-closed reader, not a provider adapter.
 
 | Project | Repository | Published artifact |
 |---|---|---|
@@ -29,6 +31,11 @@ publish, pin, or restore it.
 - Do not merge O Chat until the npm registry serves the reviewed React version.
 - A green build is necessary but not sufficient: finish with an OIP browser E2E
   against the deployed preview, then repeat it against production.
+- A local tarball can preflight React/O Chat integration but is not public-release
+  evidence. Use the exact published registry artifact for the release journey.
+- A visible O Chat change needs final-head desktop and narrow-phone screenshots
+  in the PR body. Human review, not an image-existence gate, decides whether
+  those screenshots are a useful representation of the change.
 
 ## 1. Prepare and review the React release
 
@@ -103,14 +110,28 @@ Start `co ai` from the matching Python preview/stable package, not an editable
 checkout. Open its O Chat link in a dedicated browser tab and preserve Host logs
 plus screenshots. At minimum:
 
-1. Connect and complete owner onboarding once.
+1. Connect and complete owner onboarding once; confirm it renders one invite-code
+   field and one submit control.
 2. Send a normal prompt and confirm one answer.
-3. Ask the agent to delegate a concrete task to Codex and confirm the Codex card,
-   streamed child activity, and final result.
-4. If Claude Code changed, run the equivalent Claude Code delegation.
-5. Confirm the browser console has no O Chat/React errors and Host logs show OIP
-   `/ws`, not ACP.
-6. Confirm initial onboarding renders one invite-code field and one submit.
+3. Ask Codex to complete a concrete eight-step coding journey: inspect, plan,
+   write, compile, test, review or fix, rerun, and final result. Confirm a
+   compact native card streams semantic child activity rather than raw terminal
+   output.
+4. Run the equivalent native Claude Code delegation. A one-message mock success
+   is not acceptance evidence for either provider.
+5. Open each Work Room during the run. It must lead with current progress and
+   latest useful outcome, keep old detail folded, and preserve an independently
+   usable history rather than making the parent transcript grow without bound.
+6. Render a provider thumbnail only when the native provider supplied current,
+   safe image evidence. Do not manufacture a screenshot or leak a local path.
+7. For a pending approval, the compact card exposes one correlated "Review
+   decision" entry point; authoritative Allow/Reject lives inside the Work
+   Room. Stop must acknowledge only the matching provider invocation and fail
+   closed when recovery data is damaged.
+8. Capture both desktop and narrow-phone states, including the approval/Stop
+   journey when the selected profile requests it. Confirm no horizontal overflow.
+9. Confirm browser console has no O Chat/React errors and Host logs show only
+   the OIP product path. Do not enable or test an alternate protocol surface.
 
 Do not place invite codes, credentials, or private keys in logs, screenshots,
 issues, or PRs.
